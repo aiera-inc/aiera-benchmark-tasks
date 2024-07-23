@@ -16,7 +16,10 @@ The evaluation criteria was designed to be extremely permissive, accounting for 
 These may be run using the standard `lm_eval` command line:
 
 ```bash
-lm_eval --model openai-chat-completions --model_args model=gpt-4-turbo-2024-04-09 --tasks aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,flare_finqa_verified --include_path aiera-benchmark-tasks/tasks
+lm_eval --model openai-chat-completions \
+    --model_args model=gpt-4-turbo-2024-04-09 \
+    --tasks aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,flare_finqa_verified \
+    --include_path aiera-benchmark-tasks/tasks
 ```
 
 Or programatically with python using:
@@ -30,7 +33,7 @@ task_manager = tasks.TaskManager(include_path="aiera-benchmark-tasks/tasks")
 
 results = simple_evaluate( # call simple_evaluate
     model=model,
-    tasks=[aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,flare_finqa_verified],
+    tasks=["aiera_ect_sum","aiera_speaker_assign","aiera_transcript_sentiment","flare_finqa_verified"],
     num_fewshot=0,
     task_manager=task_manager,
     write_out = True,

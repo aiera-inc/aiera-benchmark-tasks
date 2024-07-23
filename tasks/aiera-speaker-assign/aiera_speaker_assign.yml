@@ -1,0 +1,31 @@
+task: aiera_speaker_assign
+dataset_path: Aiera/aiera-speaker-assign
+training_split: null
+validation_split: null
+test_split: test
+doc_to_text: | 
+  The following two sequential text segments are extracted from a longer transcript:
+
+  1: {{prior_context}}
+  2: {{transcript_segment}}
+
+  Here are the names of some people that may have already spoken elsewhere during this event: {{prior_speakers}}
+
+  Please only use context found within these two text segments to determine if the speaker of segment 2 is different from the speaker of segment 1; and, if so, whether you can clearly identify who is now speaking in segment 2. Return your answer in JSON with the folliwing structure: {"change": true/false, "speaker": "SPEAKER NAME"} 
+  If the speaker of segment 2 is different than the speaker of segment 1, and you can clearly identify the name of the person now speaking in segment 2, respond with: {"change": true, "speaker": "SPEAKER NAME"}
+  If the speaker of segment 2 is different than the speaker of segment 1, but you cannot clearly identify the name of the person now speaking in segment 2, respond with: {"change": true, "speaker": null}
+  If the speaker of segment 2 is the same as the speaker of segment 1, or you not confident if the speaker has changed, respond with: {"change": false, "speaker": null}
+doc_to_target: speaker
+#process_docs: !function utils.preprocess_docs
+process_results: !function utils.process_results_gen
+generation_kwargs:
+  max_gen_toks: 500
+  do_sample: False
+  temperature: 0.0
+  until:
+    - "<s>"
+    - "\n\n\n"
+metric_list:
+  - metric: accuracy
+    aggregation: mean
+    higher_is_better: true

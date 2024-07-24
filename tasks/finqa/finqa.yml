@@ -3,9 +3,7 @@ dataset_path: Aiera/finqa-verified
 training_split: null
 validation_split: null
 test_split: test
-#doc_to_text: query
 doc_to_target: answer
-#process_docs: !function utils.preprocess_docs
 doc_to_text: |
   Context:
   {{context}}

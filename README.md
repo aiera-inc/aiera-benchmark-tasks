@@ -13,13 +13,26 @@ The evaluation criteria was designed to be extremely permissive, accounting for 
 
 ## How to use
 
-These may be run using the standard `lm_eval` command line:
+Set up the environment with conda:
+
+```bash
+conda env create -f environment.yml
+conda activate aiera-benchmarking
+```
+
+Next clone the `lm-evaluation-harness`.
+```bash
+git clone git@github.com:EleutherAI/lm-evaluation-harness.git
+pip install -e lm-evaluation-harness
+```
+
+Now you can run the tasks using the standard `lm_eval` command line:
 
 ```bash
 lm_eval --model openai-chat-completions \
     --model_args model=gpt-4-turbo-2024-04-09 \
     --tasks aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,finqa\
-    --include_path aiera-benchmark-tasks/tasks
+    --include_path tasks
 ```
 
 Or programatically with python using:
@@ -29,7 +42,7 @@ from lm_eval.models.openai_completions import OpenaiChatCompletionsLM
 
 model = OpenaiChatCompletionsLM("gpt-4-turbo-2024-04-09")
 
-task_manager = tasks.TaskManager(include_path="aiera-benchmark-tasks/tasks")
+task_manager = tasks.TaskManager(include_path="tasks")
 
 results = simple_evaluate( # call simple_evaluate
     model=model,

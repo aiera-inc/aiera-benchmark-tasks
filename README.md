@@ -4,7 +4,7 @@ This repository holds public-facing LLM benchmark tasks for use with EleutherAI'
 Tasks included:
 - **aiera_speaker_assign**: Assignments of speakers to event transcript segments and identification of speaker changes. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-speaker-assign).
 * **aiera-ect-sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
-* **flare-finqa-verified**: Calculation-based Q&A over financial text. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/flare-finqa-verified).
+* **finqa**: Calculation-based Q&A over financial text. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/finqa-verified).
 * **aiera-transcript-sentiment**: Event transcript segments with labels indicating the financial sentiment. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-transcript-sentiment).
 
 ## Note
@@ -18,7 +18,7 @@ These may be run using the standard `lm_eval` command line:
 ```bash
 lm_eval --model openai-chat-completions \
     --model_args model=gpt-4-turbo-2024-04-09 \
-    --tasks aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,flare_finqa_verified \
+    --tasks aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,finqa\
     --include_path aiera-benchmark-tasks/tasks
 ```
 
@@ -33,7 +33,7 @@ task_manager = tasks.TaskManager(include_path="aiera-benchmark-tasks/tasks")
 
 results = simple_evaluate( # call simple_evaluate
     model=model,
-    tasks=["aiera_ect_sum","aiera_speaker_assign","aiera_transcript_sentiment","flare_finqa_verified"],
+    tasks=["aiera_ect_sum","aiera_speaker_assign","aiera_transcript_sentiment","finqa"],
     num_fewshot=0,
     task_manager=task_manager,
     write_out = True,

@@ -1,0 +1,35 @@
+task: aiera_transcript_sentiment
+dataset_path: Aiera/aiera_transcript_sentiment
+training_split: null
+validation_split: null
+test_split: test
+doc_to_text: | 
+  What is the sentiment of the financial results reported in the following transcript segment: positive, negative, or neutral? 
+  If no results are reported, return neutral. 
+  Provide your answer as a single word, positive, negative, or neutral.
+
+  Transcript Segment: {{transcript}}
+doc_to_target: sentiment
+process_results: !function utils.process_results_gen
+metric_list:
+  - metric: accuracy
+    aggregation: mean
+    higher_is_better: true
+  - metric: negative_scored_positive
+    aggregation: mean
+    higher_is_better: false
+  - metric: negative_scored_neutral
+    aggregation: mean
+    higher_is_better: false
+  - metric: positive_scored_negative
+    aggregation: mean
+    higher_is_better: false
+  - metric: positive_scored_neutral
+    aggregation: mean
+    higher_is_better: false
+  - metric: neutral_scored_positive
+    aggregation: mean
+    higher_is_better: false
+  - metric: neutral_scored_negative
+    aggregation: mean
+    higher_is_better: false

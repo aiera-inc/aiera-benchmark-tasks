@@ -2,6 +2,9 @@ import datasets
 import numpy as np
 import sacrebleu
 from rouge_score import rouge_scorer, scoring
+from bert_score import BERTScorer
+from transformers import BertTokenizer, BertForMaskedLM, BertModel
+
 
 def process_results_gen(doc, results):
     completion = results[0]
@@ -21,11 +24,16 @@ def process_results_gen(doc, results):
     # ROUGE-L
     rougeL_score = rouge_scores["rougeLsum"]
 
+    bert_precision, bert_recall, bert_f1 = bert_score(target, completion)
+
     return {
         "bleu": bleu_score,
         "rouge1": rouge1_score,
         "rouge2": rouge2_score,
         "rougeLsum": rougeL_score,
+        "bert_precision": bert_precision.mean().item(),
+        "bert_recall": bert_recall.mean().item(),
+        "bert_f1": bert_f1.mean().item()
     }
 
 
@@ -79,3 +87,10 @@ def rouge(refs, preds):
         aggregator.add_scores(scorer.score(ref, pred))
     result = aggregator.aggregate()
     return {type: result[type].mid.fmeasure for type in rouge_types}
+
+
+def bert_score(refs, pred):
+    # BERTScore calculation
+    scorer = BERTScorer(model_type='bert-base-uncased')
+    P, R, F1 = scorer.score([pred], [refs])
+    return P, R, F1

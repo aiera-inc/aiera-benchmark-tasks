@@ -4,11 +4,25 @@ import sacrebleu
 from rouge_score import rouge_scorer, scoring
 from bert_score import BERTScorer
 from transformers import BertTokenizer, BertForMaskedLM, BertModel
-
+import re
 
 def process_results_gen(doc, results):
     completion = results[0]
     target =  doc["summary"]
+
+    # normalize all text
+    completion = completion.lower()
+    # drop markdown formatting
+    completion = completion.replace("*", "")
+    # clean up spaces and newlines
+    completion = re.sub(r'\s+', ' ', completion).strip()
+    completion = re.sub(r'\n+', ' ', completion).strip()
+
+    target = target.lower()
+    target = re.sub(r'\s+', ' ', target).strip()
+    target = re.sub(r'\n+', ' ', target).strip()
+
+
     # BLEU
     bleu_score = bleu([[target]], [completion])
 
@@ -74,9 +88,10 @@ def rouge(refs, preds):
     scorer = rouge_scorer.RougeScorer(rouge_types)
 
     # Add newlines between sentences to correctly compute `rougeLsum`.
-
+    # treatseach sentence as a separate unit for the calculation of the longest common subsequence.
+    # newlines enforces this boundary
     def _prepare_summary(summary):
-        summary = summary.replace(" . ", ".\n")
+        summary = summary.replace(". ", ".\n")
         return summary
 
     # Accumulate confidence intervals.
@@ -91,6 +106,7 @@ def rouge(refs, preds):
 
 def bert_score(refs, pred):
     # BERTScore calculation
+
     scorer = BERTScorer(model_type='bert-base-uncased')
     P, R, F1 = scorer.score([pred], [refs])
     return P, R, F1

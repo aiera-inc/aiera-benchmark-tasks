@@ -4,9 +4,10 @@ training_split: null
 validation_split: null
 test_split: test
 doc_to_text: |
-  Transcript: {{transcript}}
+  Event transcript: {{transcript}}
+
   
-  Summarize the above earnings call transcript, highlighting the company's financial performance, operational highlights, guidance and projections, strategic initiatives, market and competitive landscape, and risks and challenges.
+  Provide a technical summary of the event transcript in a concise paragraph, highlighting significant announcements, financial results, and strategic plans discussed by key speakers. Focus on the major outcomes, operational achievements, and future guidance provided during the event. Include important metrics, major deals or partnerships, and any technological advancements or integrations mentioned. Also, note any specific challenges or issues addressed during the event. Conclude with the overall sentiment expressed by the leadership or key speakers regarding the organization's future direction and growth prospects.
 doc_to_target: summary
 process_results: !function utils.process_results_gen
 metric_list:

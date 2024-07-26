@@ -17,16 +17,17 @@ Set up the environment with conda:
 
 ```bash
 conda env create -f environment.yml
-conda activate aiera-benchmarking
+conda activate aiera-benchmarking-tasks
 ```
 
-Next clone the `lm-evaluation-harness`.
+Next set up the `lm-evaluation-harness`.
 ```bash
-git clone git@github.com:EleutherAI/lm-evaluation-harness.git
+git submodule init
 pip install -e lm-evaluation-harness
+pip install -e lm-evaluation-harness"[api]"
 ```
 
-Now you can run the tasks using the standard `lm_eval` command line:
+Now you can run individual tasks using the standard `lm_eval` command line:
 
 ```bash
 lm_eval --model openai-chat-completions \
@@ -51,4 +52,13 @@ results = simple_evaluate( # call simple_evaluate
     task_manager=task_manager,
     write_out = True,
 )
+```
+
+Or alternatively, can run all tasks using
+
+```bash
+lm_eval --model openai-chat-completions \
+    --model_args model=gpt-4-turbo-2024-04-09 \
+    --tasks aiera_benchmark \
+    --include_path tasks
 ```

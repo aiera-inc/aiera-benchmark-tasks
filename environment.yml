@@ -1,0 +1,12 @@
+name: aiera-benchmarking-tasks
+dependencies:
+  - python==3.10
+  - datasets
+  - pip
+  - pip:
+    - lm_eval
+    - jupyterlab
+    - bert-score
+    - sacrebleu
+    - rouge-score
+    - openai

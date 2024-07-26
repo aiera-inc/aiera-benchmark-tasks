@@ -1,0 +1,8 @@
+group: aiera_benchmark
+task:
+  - aiera_ect_sum
+  - aiera_transcript_sentiment
+  - finqa
+  - aiera_speaker_assign
+metadata:
+  version: 1.0

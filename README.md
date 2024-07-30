@@ -3,9 +3,9 @@ This repository holds public-facing LLM benchmark tasks for use with EleutherAI'
 
 Tasks included:
 - **aiera_speaker_assign**: Assignments of speakers to event transcript segments and identification of speaker changes. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-speaker-assign).
-* **aiera-ect-sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
+* **aiera_ect_sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
 * **finqa**: Calculation-based Q&A over financial text. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/finqa-verified).
-* **aiera-transcript-sentiment**: Event transcript segments with labels indicating the financial sentiment. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-transcript-sentiment).
+* **aiera_transcript_sentiment**: Event transcript segments with labels indicating the financial sentiment. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-transcript-sentiment).
 
 ## Note
 
@@ -43,7 +43,7 @@ from lm_eval.models.openai_completions import OpenaiChatCompletionsLM
 
 model = OpenaiChatCompletionsLM("gpt-4-turbo-2024-04-09")
 
-task_manager = tasks.TaskManager(include_path="tasks")
+task_manager = tasks.TaskManager(include_path="tasks", include_defaults=False)
 
 results = simple_evaluate( # call simple_evaluate
     model=model,

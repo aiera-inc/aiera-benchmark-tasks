@@ -4,7 +4,7 @@ dependencies:
   - datasets
   - pip
   - pip:
-    - lm_eval
+    - lm_eval==0.4.3
     - jupyterlab
     - bert-score
     - sacrebleu

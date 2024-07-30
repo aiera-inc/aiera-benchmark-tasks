@@ -3,6 +3,7 @@ dataset_path: Aiera/aiera-ect-sum
 training_split: null
 validation_split: null
 test_split: test
+num_fewshot: 0
 doc_to_text: |
   Event transcript: {{transcript}}
 

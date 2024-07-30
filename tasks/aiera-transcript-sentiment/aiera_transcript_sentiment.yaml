@@ -3,6 +3,7 @@ dataset_path: Aiera/aiera_transcript_sentiment
 training_split: null
 validation_split: null
 test_split: test
+num_fewshot: 0
 doc_to_text: | 
   What is the sentiment of the financial results reported in the following transcript segment: positive, negative, or neutral? 
   If no results are reported, return neutral. 

@@ -1,5 +1,6 @@
 task: finqa
 dataset_path: Aiera/finqa-verified
+num_fewshot: 0
 training_split: null
 validation_split: null
 test_split: test

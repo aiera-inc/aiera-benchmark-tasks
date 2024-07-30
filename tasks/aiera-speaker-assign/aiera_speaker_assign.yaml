@@ -3,6 +3,7 @@ dataset_path: Aiera/aiera-speaker-assign
 training_split: null
 validation_split: null
 test_split: test
+num_fewshot: 0
 doc_to_text: | 
   The following two sequential text segments are extracted from a longer transcript:
 

@@ -2,6 +2,8 @@ def process_results_gen(doc, results):
     completion = results[0]
     target =  str(doc["answer"])
 
+    completion = completion.replace("*", "")
+
     if "formatted answer:" in completion.lower():
         completion_splits = completion.split(":")
         completion = completion_splits[-1].strip()

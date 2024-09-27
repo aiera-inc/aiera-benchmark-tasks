@@ -15,13 +15,31 @@ metric_list:
   - metric: bleu
     aggregation: mean
     higher_is_better: true
-  - metric: rouge1
+  - metric: rouge1_precision
     aggregation: mean
     higher_is_better: true
-  - metric: rouge2
+  - metric: rouge1_recall
     aggregation: mean
     higher_is_better: true
-  - metric: rougeLsum
+  - metric: rouge1_f1
+    aggregation: mean
+    higher_is_better: true
+  - metric: rouge2_precision
+    aggregation: mean
+    higher_is_better: true
+  - metric: rouge2_recall
+    aggregation: mean
+    higher_is_better: true
+  - metric: rouge2_f1
+    aggregation: mean
+    higher_is_better: true
+  - metric: rougeLsum_precision
+    aggregation: mean
+    higher_is_better: true
+  - metric: rougeLsum_recall
+    aggregation: mean
+    higher_is_better: true
+  - metric: rougeLsum_f1
     aggregation: mean
     higher_is_better: true
   - metric: bert_precision
@@ -31,5 +49,14 @@ metric_list:
     aggregation: mean
     higher_is_better: true
   - metric: bert_f1
+    aggregation: mean
+    higher_is_better: true
+  - metric: bert_no_instruct_precision
+    aggregation: mean
+    higher_is_better: true
+  - metric: bert_no_instruct_recall
+    aggregation: mean
+    higher_is_better: true
+  - metric: bert_no_instruct_f1
     aggregation: mean
     higher_is_better: true

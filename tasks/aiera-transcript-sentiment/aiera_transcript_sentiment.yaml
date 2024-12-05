@@ -10,6 +10,7 @@ doc_to_text: |
   Provide your answer as a single word, positive, negative, or neutral.
 
   Transcript Segment: {{transcript}}
+  Sentiment:
 doc_to_target: sentiment
 process_results: !function utils.process_results_gen
 metric_list:

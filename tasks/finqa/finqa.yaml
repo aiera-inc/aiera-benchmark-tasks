@@ -18,7 +18,7 @@ generation_kwargs:
   do_sample: False
   temperature: 0.0
   until:
-    - "<s>"
+    - "</s>"
     - "\n\n\n"
 metric_list:
   - metric: exact_match

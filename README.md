@@ -20,12 +20,9 @@ conda env create -f environment.yml
 conda activate aiera-benchmarking-tasks
 ```
 
-Next set up the `lm-evaluation-harness`.
-```bash
-git submodule init
-pip install -e lm-evaluation-harness
-pip install -e lm-evaluation-harness"[api]"
-```
+This installs `lm_eval==0.4.3` (pinned in `environment.yml`) along with the metric
+dependencies. The eval harness used to be vendored as a git submodule; it is now a
+pinned pip dependency, so no `git submodule init` step is required.
 
 Now you can run individual tasks using the standard `lm_eval` command line:
 
@@ -62,3 +59,37 @@ lm_eval --model openai-chat-completions \
     --tasks aiera_benchmark \
     --include_path tasks
 ```
+
+## Publishing models to the leaderboard
+
+The commands above run a single model and print results, but they don't get a model
+onto the [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard).
+The board only renders models that have a complete results file in the
+[`Aiera/aiera-leaderboard-results`](https://huggingface.co/datasets/Aiera/aiera-leaderboard-results)
+dataset (plus a matching entry in the queue dataset). The `runner/` package wraps that
+end-to-end: it runs all four tasks for a reviewed set of models, writes results in the
+schema the Space expects, and publishes to both the results and queue datasets.
+
+The model list — including the correct, current provider model ids — lives in
+`runner/models.py`. **Model ids must be exact**: e.g. Anthropic ids from the 4.6
+generation on are *dateless* (`claude-opus-4-6`, not `claude-opus-4-6-20250725`),
+otherwise the provider returns a 404 and the run is recorded as `FAILED`.
+
+```bash
+# Validate the registry and see the plan — no API calls, no cost:
+python -m runner.run --models all --dry-run
+
+# Smoke test one model against 2 samples/task without publishing:
+python -m runner.run --models openai/gpt-5.5 --limit 2 --no-upload
+
+# Full run + publish (needs the provider keys and an HF write token):
+export ANTHROPIC_API_KEY=...        # per-provider keys, see runner/models.py `requires`
+export OPENAI_API_KEY=...
+export HF_TOKEN=...                  # write access to the Aiera datasets
+python -m runner.run --models anthropic/claude-opus-4-8,anthropic/claude-opus-4-7,openai/gpt-5.5
+```
+
+Models missing their required key are recorded as `FAILED` (with the reason) and
+skipped; a model that errors mid-run is recorded as `FAILED` without aborting the rest
+of the batch. To add a new model, append a `ModelSpec` to `runner/models.py` after
+verifying its id against the provider's `/v1/models` endpoint.

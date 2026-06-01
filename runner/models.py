@@ -51,8 +51,9 @@ class ModelSpec:
 # Google/DeepSeek expose OpenAI-compatible endpoints, so they reuse lm-eval's
 # ``local-chat-completions`` backend with a base_url override. That backend reads
 # its key from OPENAI_API_KEY, so the runner maps the provider key into it.
-_GEMINI_BASE = "base_url=https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-_DEEPSEEK_BASE = "base_url=https://api.deepseek.com/chat/completions"
+# API roots only — the OpenAI client appends "/chat/completions" itself.
+_GEMINI_BASE = "base_url=https://generativelanguage.googleapis.com/v1beta/openai"
+_DEEPSEEK_BASE = "base_url=https://api.deepseek.com"
 
 
 REGISTRY: list[ModelSpec] = [

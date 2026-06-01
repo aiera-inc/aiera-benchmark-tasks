@@ -39,6 +39,13 @@ def _is_openai_reasoning(model: str) -> bool:
     return m.startswith(("o1", "o3", "o4")) or m.startswith("gpt-5")
 
 
+def _COMPAT_REASONING(model: str) -> bool:
+    # Reasoning models behind OpenAI-compatible endpoints (Gemini 2.5, DeepSeek-R1)
+    # spend hidden tokens; DeepSeek-V3 (chat) does not.
+    m = (model or "").lower()
+    return "gemini-2.5" in m or "deepseek-r1" in m or "deepseek-reasoner" in m
+
+
 def apply() -> None:
     """Idempotently patch the OpenAI and Anthropic call sites in lm-eval 0.4.3."""
     global _applied
@@ -52,15 +59,21 @@ def apply() -> None:
         if not chat:
             return client.completions.create(**kwargs)
         model = kwargs.get("model", "")
+        base = str(getattr(client, "base_url", "") or "")
         requested = kwargs.pop("max_tokens", None) or 0
-        if _is_openai_reasoning(model):
-            # rename + enlarge budget, drop unsupported params
-            kwargs["max_completion_tokens"] = max(requested, REASONING_BUDGET)
-            kwargs.pop("temperature", None)
-            kwargs.pop("stop", None)  # lm-eval re-applies `until` truncation post-hoc
+        if "openai.com" in base:
+            # OpenAI native: reasoning models need max_completion_tokens and reject
+            # temperature/stop; the `until` truncation is re-applied by lm-eval post-hoc.
+            if _is_openai_reasoning(model):
+                kwargs["max_completion_tokens"] = max(requested, REASONING_BUDGET)
+                kwargs.pop("temperature", None)
+                kwargs.pop("stop", None)
+            else:
+                kwargs["max_completion_tokens"] = requested or 256
         else:
-            # modern param name works for all current chat models; respect task cap
-            kwargs["max_completion_tokens"] = requested or 256
+            # OpenAI-compatible endpoint (Gemini/DeepSeek): keep plain max_tokens and
+            # leave temperature/stop alone; just give reasoning models headroom.
+            kwargs["max_tokens"] = max(requested, REASONING_BUDGET) if _COMPAT_REASONING(model) else (requested or 256)
         client = client.with_options(timeout=REQUEST_TIMEOUT, max_retries=MAX_RETRIES)
         return client.chat.completions.create(**kwargs)
 

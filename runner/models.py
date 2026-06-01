@@ -35,6 +35,7 @@ class ModelSpec:
     model_id: str  # provider API model id passed to the backend
     requires: tuple[str, ...]  # env vars that MUST be set for this model to run
     extra_args: str = ""  # extra lm-eval model_args, comma-joined (e.g. base_url=...)
+    key_env: str = ""  # env var holding the key to feed an OpenAI-compatible backend (overrides PROVIDER_KEY_FOR_OPENAI_COMPAT)
     license: str = "proprietary"
 
     @property
@@ -54,6 +55,15 @@ class ModelSpec:
 # API roots only — the OpenAI client appends "/chat/completions" itself.
 _GEMINI_BASE = "base_url=https://generativelanguage.googleapis.com/v1beta/openai"
 _DEEPSEEK_BASE = "base_url=https://api.deepseek.com"
+# Together AI hosts current open-weight models on one OpenAI-compatible endpoint.
+# (Serving config/quantization is provider-specific — footnote "served via Together"
+# on the board for apples-to-apples comparison.)
+_TOGETHER_BASE = "base_url=https://api.together.xyz/v1"
+
+
+def _together(path: str, model_id: str, license: str) -> "ModelSpec":
+    return ModelSpec(path, "local-chat-completions", model_id, ("TOGETHER_API_KEY",),
+                     _TOGETHER_BASE, key_env="TOGETHER_API_KEY", license=license)
 
 
 REGISTRY: list[ModelSpec] = [
@@ -73,6 +83,16 @@ REGISTRY: list[ModelSpec] = [
     ModelSpec("google/gemini-2.5-flash", "local-chat-completions", "gemini-2.5-flash", ("GEMINI_API_KEY",), _GEMINI_BASE),
     # --- DeepSeek (OpenAI-compatible endpoint) ----------------------------------
     ModelSpec("deepseek/DeepSeek-V3-0324", "local-chat-completions", "deepseek-chat", ("DEEPSEEK_API_KEY",), _DEEPSEEK_BASE),
+    # --- Open-weight, served via Together AI ------------------------------------
+    _together("meta-llama/Llama-4-Maverick-17B-128E-Instruct", "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "Llama 4 Community"),
+    _together("meta-llama/Llama-4-Scout-17B-16E-Instruct", "meta-llama/Llama-4-Scout-17B-16E-Instruct", "Llama 4 Community"),
+    _together("Qwen/Qwen3-235B-A22B", "Qwen/Qwen3-235B-A22B-Instruct-2507-FP8", "Apache-2.0"),
+    _together("Qwen/Qwen3-32B", "Qwen/Qwen3-32B", "Apache-2.0"),
+    _together("mistralai/Mistral-Small-24B-Instruct-2501", "mistralai/Mistral-Small-24B-Instruct-2501", "Apache-2.0"),
+    _together("google/gemma-3-27b-it", "google/gemma-3-27b-it", "Gemma"),
+    _together("openai/gpt-oss-120b", "openai/gpt-oss-120b", "Apache-2.0"),
+    _together("zai-org/GLM-4.6", "zai-org/GLM-4.6", "MIT"),
+    _together("moonshotai/Kimi-K2.6", "moonshotai/Kimi-K2.6", "Modified-MIT"),
 ]
 
 

@@ -28,6 +28,10 @@ import os
 # for tokens actually generated, and non-reasoning models stop well before this.
 REASONING_BUDGET = int(os.environ.get("LB_MAX_COMPLETION_TOKENS", "16000"))
 ANTHROPIC_MIN_BUDGET = int(os.environ.get("LB_ANTHROPIC_MIN_TOKENS", "2048"))
+# Open-weight models behind OpenAI-compatible hosts (Together etc.) often have a
+# thinking mode on by default; give them room so the answer isn't truncated by
+# reasoning tokens. You only pay for tokens actually generated.
+COMPAT_MIN_BUDGET = int(os.environ.get("LB_COMPAT_MIN_TOKENS", "8000"))
 REQUEST_TIMEOUT = float(os.environ.get("LB_REQUEST_TIMEOUT", "300"))
 MAX_RETRIES = int(os.environ.get("LB_MAX_RETRIES", "4"))
 
@@ -71,9 +75,10 @@ def apply() -> None:
             else:
                 kwargs["max_completion_tokens"] = requested or 256
         else:
-            # OpenAI-compatible endpoint (Gemini/DeepSeek): keep plain max_tokens and
-            # leave temperature/stop alone; just give reasoning models headroom.
-            kwargs["max_tokens"] = max(requested, REASONING_BUDGET) if _COMPAT_REASONING(model) else (requested or 256)
+            # OpenAI-compatible endpoint (Gemini/DeepSeek/Together): keep plain max_tokens
+            # and leave temperature/stop alone; give all of them headroom since many
+            # open-weight models emit hidden reasoning before the answer.
+            kwargs["max_tokens"] = max(requested, COMPAT_MIN_BUDGET)
         client = client.with_options(timeout=REQUEST_TIMEOUT, max_retries=MAX_RETRIES)
         return client.chat.completions.create(**kwargs)
 

@@ -102,7 +102,7 @@ def _run_one(spec: ModelSpec, tasks: list[str], limit: int | None) -> dict:
     compat.apply()
 
     # local-chat-completions reads its key from OPENAI_API_KEY; map the provider key in.
-    env_key = PROVIDER_KEY_FOR_OPENAI_COMPAT.get(spec.org)
+    env_key = spec.key_env or PROVIDER_KEY_FOR_OPENAI_COMPAT.get(spec.org)
     if spec.backend == "local-chat-completions" and env_key:
         os.environ["OPENAI_API_KEY"] = os.environ[env_key]
 

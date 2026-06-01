@@ -59,6 +59,8 @@ _DEEPSEEK_BASE = "base_url=https://api.deepseek.com"
 # (Serving config/quantization is provider-specific — footnote "served via Together"
 # on the board for apples-to-apples comparison.)
 _TOGETHER_BASE = "base_url=https://api.together.xyz/v1"
+# Mistral's own API (la Plateforme) hosts Mistral Large, which Together does not.
+_MISTRAL_BASE = "base_url=https://api.mistral.ai/v1"
 
 
 def _together(path: str, model_id: str, license: str) -> "ModelSpec":
@@ -93,6 +95,9 @@ REGISTRY: list[ModelSpec] = [
     _together("openai/gpt-oss-120b", "openai/gpt-oss-120b", "Apache-2.0"),
     _together("zai-org/GLM-4.6", "zai-org/GLM-4.6", "MIT"),
     _together("moonshotai/Kimi-K2.6", "moonshotai/Kimi-K2.6", "Modified-MIT"),
+    # --- Mistral Large (Mistral's own API; not hosted on Together) ---------------
+    ModelSpec("mistralai/mistral-large-2512", "local-chat-completions", "mistral-large-2512",
+              ("MISTRAL_API_KEY",), _MISTRAL_BASE, key_env="MISTRAL_API_KEY", license="Mistral Research"),
 ]
 
 

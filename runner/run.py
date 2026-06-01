@@ -98,6 +98,9 @@ def _run_one(spec: ModelSpec, tasks: list[str], limit: int | None) -> dict:
     """Run lm-eval for a single model. Imported lazily so --dry-run needs no deps."""
     from lm_eval import simple_evaluate, tasks as lm_tasks
 
+    from runner import compat  # patch lm-eval 0.4.3 for current frontier models
+    compat.apply()
+
     # local-chat-completions reads its key from OPENAI_API_KEY; map the provider key in.
     env_key = PROVIDER_KEY_FOR_OPENAI_COMPAT.get(spec.org)
     if spec.backend == "local-chat-completions" and env_key:

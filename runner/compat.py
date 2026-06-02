@@ -33,7 +33,7 @@ ANTHROPIC_MIN_BUDGET = int(os.environ.get("LB_ANTHROPIC_MIN_TOKENS", "2048"))
 # reasoning tokens. You only pay for tokens actually generated.
 COMPAT_MIN_BUDGET = int(os.environ.get("LB_COMPAT_MIN_TOKENS", "8000"))
 REQUEST_TIMEOUT = float(os.environ.get("LB_REQUEST_TIMEOUT", "300"))
-MAX_RETRIES = int(os.environ.get("LB_MAX_RETRIES", "4"))
+MAX_RETRIES = int(os.environ.get("LB_MAX_RETRIES", "8"))  # ride out transient 429s (SDK respects Retry-After)
 
 _applied = False
 

@@ -61,6 +61,14 @@ _DEEPSEEK_BASE = "base_url=https://api.deepseek.com"
 _TOGETHER_BASE = "base_url=https://api.together.xyz/v1"
 # Mistral's own API (la Plateforme) hosts Mistral Large, which Together does not.
 _MISTRAL_BASE = "base_url=https://api.mistral.ai/v1"
+# OpenRouter: one OpenAI-compatible endpoint with broad serverless coverage of
+# open-weight models (routes to underlying hosts — footnote "via OpenRouter").
+_OPENROUTER_BASE = "base_url=https://openrouter.ai/api/v1"
+
+
+def _openrouter(path: str, model_id: str, license: str) -> "ModelSpec":
+    return ModelSpec(path, "local-chat-completions", model_id, ("OPENROUTER_API_KEY",),
+                     _OPENROUTER_BASE, key_env="OPENROUTER_API_KEY", license=license)
 
 
 def _together(path: str, model_id: str, license: str) -> "ModelSpec":
@@ -85,19 +93,17 @@ REGISTRY: list[ModelSpec] = [
     ModelSpec("google/gemini-2.5-flash", "local-chat-completions", "gemini-2.5-flash", ("GEMINI_API_KEY",), _GEMINI_BASE),
     # --- DeepSeek (OpenAI-compatible endpoint) ----------------------------------
     ModelSpec("deepseek/DeepSeek-V3-0324", "local-chat-completions", "deepseek-chat", ("DEEPSEEK_API_KEY",), _DEEPSEEK_BASE),
-    # --- Open-weight, served via Together AI ------------------------------------
-    _together("meta-llama/Llama-4-Maverick-17B-128E-Instruct", "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8", "Llama 4 Community"),
-    _together("meta-llama/Llama-4-Scout-17B-16E-Instruct", "meta-llama/Llama-4-Scout-17B-16E-Instruct", "Llama 4 Community"),
-    _together("Qwen/Qwen3-235B-A22B", "Qwen/Qwen3-235B-A22B-Instruct-2507-FP8", "Apache-2.0"),
-    _together("Qwen/Qwen3-32B", "Qwen/Qwen3-32B", "Apache-2.0"),
-    _together("mistralai/Mistral-Small-24B-Instruct-2501", "mistralai/Mistral-Small-24B-Instruct-2501", "Apache-2.0"),
-    _together("google/gemma-3-27b-it", "google/gemma-3-27b-it", "Gemma"),
-    _together("openai/gpt-oss-120b", "openai/gpt-oss-120b", "Apache-2.0"),
-    _together("zai-org/GLM-4.6", "zai-org/GLM-4.6", "MIT"),
-    _together("moonshotai/Kimi-K2.6", "moonshotai/Kimi-K2.6", "Modified-MIT"),
-    # --- Mistral Large (Mistral's own API; not hosted on Together) ---------------
-    ModelSpec("mistralai/mistral-large-2512", "local-chat-completions", "mistral-large-2512",
-              ("MISTRAL_API_KEY",), _MISTRAL_BASE, key_env="MISTRAL_API_KEY", license="Mistral Research"),
+    # --- Open-weight + Mistral Large, served via OpenRouter (broad serverless) ---
+    _openrouter("meta-llama/Llama-4-Maverick-17B-128E-Instruct", "meta-llama/llama-4-maverick", "Llama 4 Community"),
+    _openrouter("meta-llama/Llama-4-Scout-17B-16E-Instruct", "meta-llama/llama-4-scout", "Llama 4 Community"),
+    _openrouter("Qwen/Qwen3-235B-A22B", "qwen/qwen3-235b-a22b-2507", "Apache-2.0"),
+    _openrouter("Qwen/Qwen3-32B", "qwen/qwen3-32b", "Apache-2.0"),
+    _openrouter("mistralai/Mistral-Small-24B-Instruct-2501", "mistralai/mistral-small-24b-instruct-2501", "Apache-2.0"),
+    _openrouter("google/gemma-3-27b-it", "google/gemma-3-27b-it", "Gemma"),
+    _openrouter("openai/gpt-oss-120b", "openai/gpt-oss-120b", "Apache-2.0"),
+    _openrouter("zai-org/GLM-4.6", "z-ai/glm-4.6", "MIT"),
+    _openrouter("moonshotai/Kimi-K2.6", "moonshotai/kimi-k2.6", "Modified-MIT"),
+    _openrouter("mistralai/mistral-large-2512", "mistralai/mistral-large-2512", "Mistral Research"),
 ]
 
 

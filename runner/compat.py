@@ -80,7 +80,15 @@ def apply() -> None:
             # open-weight models emit hidden reasoning before the answer.
             kwargs["max_tokens"] = max(requested, COMPAT_MIN_BUDGET)
         client = client.with_options(timeout=REQUEST_TIMEOUT, max_retries=MAX_RETRIES)
-        return client.chat.completions.create(**kwargs)
+        resp = client.chat.completions.create(**kwargs)
+        # Some hosts (esp. via OpenRouter) return null content on a refusal/empty
+        # generation; lm-eval and the task post-processing then do .split() on None and
+        # crash the whole model. Coerce null -> "" so it scores as an empty answer instead.
+        for ch in getattr(resp, "choices", None) or []:
+            msg = getattr(ch, "message", None)
+            if msg is not None and getattr(msg, "content", None) is None:
+                msg.content = ""
+        return resp
 
     oc.oa_completion = patched_oa_completion
 

@@ -45,7 +45,7 @@ from runner.models import (
     by_path,
 )
 
-TASKS = ["aiera_ect_sum", "aiera_speaker_assign", "aiera_transcript_sentiment", "finqa"]
+TASKS = ["aiera_ect_sum", "aiera_transcript_sentiment", "finqa"]
 RESULTS_REPO = "Aiera/aiera-leaderboard-results"
 QUEUE_REPO = "Aiera/aiera-leaderboard-queue"
 REPO_ROOT = Path(__file__).resolve().parent.parent

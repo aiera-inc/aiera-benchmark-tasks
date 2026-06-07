@@ -2,10 +2,32 @@
 This repository holds public-facing LLM benchmark tasks for use with EleutherAI's [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness). A leaderboard for these tasks is available on huggingface [here](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard).
 
 Tasks included:
-- **aiera_speaker_assign**: Assignments of speakers to event transcript segments and identification of speaker changes. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-speaker-assign).
-* **aiera_ect_sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
 * **finqa**: Calculation-based Q&A over financial text. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/finqa-verified).
+* **aiera_ect_sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
 * **aiera_transcript_sentiment**: Event transcript segments with labels indicating the financial sentiment. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-transcript-sentiment).
+* **aiera_speaker_assign**: Assignments of speakers to event transcript segments and identification of speaker changes. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-speaker-assign).
+
+## The Aiera Score
+
+The [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard) ranks models by a
+weighted **Aiera Score**. Its central measure is **Research** (answering proprietary,
+analyst-grade research questions while connected to Aiera's [MCP server](https://mcp-pub.aiera.com)),
+combined with the capability tasks in this repo:
+
+| Component | Weight |
+| --- | --- |
+| Research (model + Aiera MCP) | 60% |
+| Q&A (`finqa`) | 24% |
+| Summary (`aiera_ect_sum`) | 10% |
+| Sentiment (`aiera_transcript_sentiment`) | 6% |
+
+The board is **research-gated**: a model must have a Research score to be listed. The Research
+measure is evaluated separately (it is not one of the lm-eval tasks in this repo); the four
+capability tasks above are what this repository defines and runs.
+
+> **Note on `aiera_speaker_assign`.** This task is still defined and runnable here, but it is no
+> longer part of the headline Aiera Score (it was a legacy task, dropped from the weighting). It
+> remains available for standalone evaluation and in the `aiera_benchmark` group.
 
 ## Note
 
@@ -70,13 +92,13 @@ dataset (plus a matching entry in the queue dataset). The `runner/` package wrap
 end-to-end: it runs all four tasks for a reviewed set of models, writes results in the
 schema the Space expects, and publishes to both the results and queue datasets.
 
-The model list — including the correct, current provider model ids — lives in
+The model list (including the correct, current provider model ids) lives in
 `runner/models.py`. **Model ids must be exact**: e.g. Anthropic ids from the 4.6
 generation on are *dateless* (`claude-opus-4-6`, not `claude-opus-4-6-20250725`),
 otherwise the provider returns a 404 and the run is recorded as `FAILED`.
 
 ```bash
-# Validate the registry and see the plan — no API calls, no cost:
+# Validate the registry and see the plan (no API calls, no cost):
 python -m runner.run --models all --dry-run
 
 # Smoke test one model against 2 samples/task without publishing:

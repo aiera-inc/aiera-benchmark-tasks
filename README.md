@@ -6,10 +6,6 @@ Tasks included:
 * **aiera_ect_sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
 * **aiera_transcript_sentiment**: Event transcript segments with labels indicating the financial sentiment. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-transcript-sentiment).
 
-> A former task, `aiera_speaker_assign` (speaker attribution), has been **deprecated** and removed
-> from this suite and the leaderboard. The [dataset](https://huggingface.co/datasets/Aiera/aiera-speaker-assign)
-> remains on Hugging Face for reference.
-
 ## The Aiera Score
 
 The [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard) ranks models by a
@@ -88,8 +84,10 @@ onto the [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderb
 The board only renders models that have a complete results file in the
 [`Aiera/aiera-leaderboard-results`](https://huggingface.co/datasets/Aiera/aiera-leaderboard-results)
 dataset (plus a matching entry in the queue dataset). The `runner/` package wraps that
-end-to-end: it runs all four tasks for a reviewed set of models, writes results in the
-schema the Space expects, and publishes to both the results and queue datasets.
+end-to-end: it runs all capability tasks for a reviewed set of models, writes results in the
+schema the Space expects, and publishes to both the results and queue datasets. (The runner
+evaluates the three capability tasks above; the Research component of the Aiera Score is scored
+separately.)
 
 The model list (including the correct, current provider model ids) lives in
 `runner/models.py`. **Model ids must be exact**: e.g. Anthropic ids from the 4.6

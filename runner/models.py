@@ -104,6 +104,9 @@ REGISTRY: list[ModelSpec] = [
     _openrouter("zai-org/GLM-4.6", "z-ai/glm-4.6", "MIT"),
     _openrouter("moonshotai/Kimi-K2.6", "moonshotai/kimi-k2.6", "Modified-MIT"),
     _openrouter("mistralai/mistral-large-2512", "mistralai/mistral-large-2512", "Mistral Research"),
+    # Liquid LFM2-24B-A2B: OpenRouter serves it chat-only (no tool endpoint); Together AI serves
+    # it with native function calling, which the research eval requires. Served via Together.
+    _together("LiquidAI/LFM2-24B-A2B", "LiquidAI/LFM2-24B-A2B", "LFM Open License"),
 ]
 
 

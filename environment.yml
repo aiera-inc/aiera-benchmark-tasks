@@ -10,3 +10,4 @@ dependencies:
     - sacrebleu
     - rouge-score
     - openai
+    - anthropic   # required by runner/compat.py (Anthropic Messages API patch)

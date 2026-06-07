@@ -121,6 +121,9 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+# Local eval run artifacts (results are published to the HF datasets, not committed here)
+.eval-output/
+
 # Environments
 .env
 .venv

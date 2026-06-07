@@ -85,9 +85,8 @@ The board only renders models that have a complete results file in the
 [`Aiera/aiera-leaderboard-results`](https://huggingface.co/datasets/Aiera/aiera-leaderboard-results)
 dataset (plus a matching entry in the queue dataset). The `runner/` package wraps that
 end-to-end: it runs all capability tasks for a reviewed set of models, writes results in the
-schema the Space expects, and publishes to both the results and queue datasets. (The runner
-evaluates the three capability tasks above; the Research component of the Aiera Score is scored
-separately.)
+schema the Space expects, and publishes to both the results and queue datasets. (The Research
+component of the Aiera Score is scored separately, not by this runner.)
 
 The model list (including the correct, current provider model ids) lives in
 `runner/models.py`. **Model ids must be exact**: e.g. Anthropic ids from the 4.6

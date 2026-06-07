@@ -5,7 +5,6 @@ Tasks included:
 * **finqa**: Calculation-based Q&A over financial text. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/finqa-verified).
 * **aiera_ect_sum**: Abstractive summarizations of earnings call transcripts. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-ect-sum).
 * **aiera_transcript_sentiment**: Event transcript segments with labels indicating the financial sentiment. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-transcript-sentiment).
-* **aiera_speaker_assign**: Assignments of speakers to event transcript segments and identification of speaker changes. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/aiera-speaker-assign).
 
 ## The Aiera Score
 
@@ -22,12 +21,8 @@ combined with the capability tasks in this repo:
 | Sentiment (`aiera_transcript_sentiment`) | 6% |
 
 The board is **research-gated**: a model must have a Research score to be listed. The Research
-measure is evaluated separately (it is not one of the lm-eval tasks in this repo); the four
+measure is evaluated separately (it is not one of the lm-eval tasks in this repo); the three
 capability tasks above are what this repository defines and runs.
-
-> **Note on `aiera_speaker_assign`.** This task is still defined and runnable here, but it is no
-> longer part of the headline Aiera Score (it was a legacy task, dropped from the weighting). It
-> remains available for standalone evaluation and in the `aiera_benchmark` group.
 
 ## Note
 
@@ -51,7 +46,7 @@ Now you can run individual tasks using the standard `lm_eval` command line:
 ```bash
 lm_eval --model openai-chat-completions \
     --model_args model=gpt-4-turbo-2024-04-09 \
-    --tasks aiera_ect_sum,aiera_speaker_assign,aiera_transcript_sentiment,finqa\
+    --tasks aiera_ect_sum,aiera_transcript_sentiment,finqa\
     --include_path tasks
 ```
 
@@ -66,7 +61,7 @@ task_manager = tasks.TaskManager(include_path="tasks", include_defaults=False)
 
 results = simple_evaluate( # call simple_evaluate
     model=model,
-    tasks=["aiera_ect_sum","aiera_speaker_assign","aiera_transcript_sentiment","finqa"],
+    tasks=["aiera_ect_sum","aiera_transcript_sentiment","finqa"],
     num_fewshot=0,
     task_manager=task_manager,
     write_out = True,
@@ -89,8 +84,9 @@ onto the [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderb
 The board only renders models that have a complete results file in the
 [`Aiera/aiera-leaderboard-results`](https://huggingface.co/datasets/Aiera/aiera-leaderboard-results)
 dataset (plus a matching entry in the queue dataset). The `runner/` package wraps that
-end-to-end: it runs all four tasks for a reviewed set of models, writes results in the
-schema the Space expects, and publishes to both the results and queue datasets.
+end-to-end: it runs all capability tasks for a reviewed set of models, writes results in the
+schema the Space expects, and publishes to both the results and queue datasets. (The Research
+component of the Aiera Score is scored separately, not by this runner.)
 
 The model list (including the correct, current provider model ids) lives in
 `runner/models.py`. **Model ids must be exact**: e.g. Anthropic ids from the 4.6

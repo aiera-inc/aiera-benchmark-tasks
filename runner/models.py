@@ -84,6 +84,7 @@ REGISTRY: list[ModelSpec] = [
     ModelSpec("openai/o4-mini-2025-04-16", "openai-chat-completions", "o4-mini-2025-04-16", ("OPENAI_API_KEY",)),
     ModelSpec("openai/gpt-4.1-nano-2025-04-14", "openai-chat-completions", "gpt-4.1-nano-2025-04-14", ("OPENAI_API_KEY",)),
     # --- Anthropic (dateless ids from the 4.6 generation onward) ----------------
+    ModelSpec("anthropic/claude-fable-5", "anthropic-chat", "claude-fable-5", ("ANTHROPIC_API_KEY",)),
     ModelSpec("anthropic/claude-opus-4-8", "anthropic-chat", "claude-opus-4-8", ("ANTHROPIC_API_KEY",)),
     ModelSpec("anthropic/claude-opus-4-7", "anthropic-chat", "claude-opus-4-7", ("ANTHROPIC_API_KEY",)),
     ModelSpec("anthropic/claude-opus-4-6", "anthropic-chat", "claude-opus-4-6", ("ANTHROPIC_API_KEY",)),

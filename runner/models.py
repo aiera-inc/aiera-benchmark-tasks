@@ -78,12 +78,17 @@ def _together(path: str, model_id: str, license: str) -> "ModelSpec":
 
 REGISTRY: list[ModelSpec] = [
     # --- OpenAI -----------------------------------------------------------------
+    # gpt-5.5-pro is a Responses-API reasoning model (rejects v1/chat/completions),
+    # so its capability run goes via OpenRouter (chat-normalized). Its research run
+    # uses the native OpenAI Responses API (lift.py "openai" answerer) regardless.
+    _openrouter("openai/gpt-5.5-pro", "openai/gpt-5.5-pro", "proprietary"),
     ModelSpec("openai/gpt-5.5", "openai-chat-completions", "gpt-5.5", ("OPENAI_API_KEY",)),
     ModelSpec("openai/gpt-5.2", "openai-chat-completions", "gpt-5.2", ("OPENAI_API_KEY",)),
     ModelSpec("openai/o3-2025-04-16", "openai-chat-completions", "o3-2025-04-16", ("OPENAI_API_KEY",)),
     ModelSpec("openai/o4-mini-2025-04-16", "openai-chat-completions", "o4-mini-2025-04-16", ("OPENAI_API_KEY",)),
     ModelSpec("openai/gpt-4.1-nano-2025-04-14", "openai-chat-completions", "gpt-4.1-nano-2025-04-14", ("OPENAI_API_KEY",)),
     # --- Anthropic (dateless ids from the 4.6 generation onward) ----------------
+    ModelSpec("anthropic/claude-sonnet-5", "anthropic-chat", "claude-sonnet-5", ("ANTHROPIC_API_KEY",)),
     ModelSpec("anthropic/claude-fable-5", "anthropic-chat", "claude-fable-5", ("ANTHROPIC_API_KEY",)),
     ModelSpec("anthropic/claude-opus-4-8", "anthropic-chat", "claude-opus-4-8", ("ANTHROPIC_API_KEY",)),
     ModelSpec("anthropic/claude-opus-4-7", "anthropic-chat", "claude-opus-4-7", ("ANTHROPIC_API_KEY",)),
@@ -102,8 +107,21 @@ REGISTRY: list[ModelSpec] = [
     _openrouter("mistralai/Mistral-Small-24B-Instruct-2501", "mistralai/mistral-small-24b-instruct-2501", "Apache-2.0"),
     _openrouter("google/gemma-3-27b-it", "google/gemma-3-27b-it", "Gemma"),
     _openrouter("openai/gpt-oss-120b", "openai/gpt-oss-120b", "Apache-2.0"),
+    _openrouter("zai-org/GLM-5.2", "z-ai/glm-5.2", "MIT"),
     _openrouter("zai-org/GLM-4.6", "z-ai/glm-4.6", "MIT"),
+    _openrouter("moonshotai/Kimi-K2.7-Code", "moonshotai/kimi-k2.7-code", "Modified-MIT"),
     _openrouter("moonshotai/Kimi-K2.6", "moonshotai/kimi-k2.6", "Modified-MIT"),
+    _openrouter("Qwen/Qwen3.7-Max", "qwen/qwen3.7-max", "proprietary"),
+    _openrouter("Qwen/Qwen3.7-Plus", "qwen/qwen3.7-plus", "proprietary"),
+    _openrouter("deepseek/DeepSeek-V4-Pro", "deepseek/deepseek-v4-pro", "MIT"),
+    _openrouter("MiniMaxAI/MiniMax-M3", "minimax/minimax-m3", "Apache-2.0"),
+    _openrouter("nvidia/Nemotron-3-Ultra-550B-A55B", "nvidia/nemotron-3-ultra-550b-a55b", "NVIDIA Open Model License"),
+    _openrouter("google/gemma-4-31b-it", "google/gemma-4-31b-it", "Gemma"),
+    # Closed frontier routed via OpenRouter (no native GEMINI/XAI keys in env; served via OpenRouter)
+    _openrouter("google/gemini-3.1-pro", "google/gemini-3.1-pro-preview", "proprietary"),
+    _openrouter("google/gemini-3.5-flash", "google/gemini-3.5-flash", "proprietary"),
+    _openrouter("x-ai/grok-4.3", "x-ai/grok-4.3", "proprietary"),
+    _openrouter("mistralai/Mistral-Medium-3.5", "mistralai/mistral-medium-3-5", "proprietary"),
     _openrouter("mistralai/mistral-large-2512", "mistralai/mistral-large-2512", "Mistral Research"),
     # Liquid LFM2-24B-A2B: OpenRouter serves it chat-only (no tool endpoint); Together AI serves
     # it with native function calling, which the research eval requires. Served via Together.

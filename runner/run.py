@@ -48,6 +48,7 @@ from runner.models import (
 TASKS = ["aiera_ect_sum", "aiera_transcript_sentiment", "finqa"]
 RESULTS_REPO = "Aiera/aiera-leaderboard-results"
 QUEUE_REPO = "Aiera/aiera-leaderboard-queue"
+ANSWERS_REPO = "Aiera/aiera-leaderboard-eval-runs"  # private: full per-doc answers for analysis/replay
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TASKS_PATH = REPO_ROOT / "tasks"
 
@@ -115,8 +116,9 @@ def _run_one(spec: ModelSpec, tasks: list[str], limit: int | None) -> dict:
         task_manager=task_manager,
         limit=limit,
         write_out=False,
+        log_samples=True,  # persist per-doc inputs + model answers for analysis/replay
     )
-    return out["results"]
+    return out["results"], out.get("samples")
 
 
 def _publish(api, spec: ModelSpec, doc: dict, out_dir: Path, status: str, reason: str = "") -> None:
@@ -144,6 +146,31 @@ def _publish(api, spec: ModelSpec, doc: dict, out_dir: Path, status: str, reason
         repo_type="dataset",
         commit_message=f"Set {spec.path} -> {status}",
     )
+
+
+def _save_samples(spec: ModelSpec, samples: dict | None, out_dir: Path) -> None:
+    """Persist per-doc capability answers (inputs + model responses) locally and to the
+    private answers dataset, so analysis/re-scoring never needs to regenerate them."""
+    if not samples:
+        return
+    slug = spec.path.replace("/", "_")
+    local = out_dir / "samples" / f"{slug}_capability_samples.json"
+    local.parent.mkdir(parents=True, exist_ok=True)
+    local.write_text(json.dumps(samples, default=str))
+    token = os.environ.get("HF_TOKEN")
+    if not token:
+        return
+    try:
+        from huggingface_hub import HfApi
+        HfApi(token=token).upload_file(
+            path_or_fileobj=str(local),
+            path_in_repo=f"capability/{slug}_samples.json",
+            repo_id=ANSWERS_REPO, repo_type="dataset",
+            commit_message=f"capability samples {spec.path}",
+        )
+        print(f"  samples -> {ANSWERS_REPO}/capability/{slug}_samples.json")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [samples upload skipped] {type(exc).__name__}: {exc}")
 
 
 def main() -> None:
@@ -196,13 +223,14 @@ def main() -> None:
             continue
         print(f"\n[RUN ] {spec.path} ({spec.model_id}) ...")
         try:
-            lm_results = _run_one(spec, tasks, args.limit)
+            lm_results, lm_samples = _run_one(spec, tasks, args.limit)
             doc = _build_results_doc(spec, lm_results)
             if api:
                 _publish(api, spec, doc, out_dir, "FINISHED")
             else:
                 (out_dir / spec.path).mkdir(parents=True, exist_ok=True)
                 (out_dir / spec.path / f"results_{_now()}.json").write_text(json.dumps(doc, indent=2))
+            _save_samples(spec, lm_samples, out_dir)  # persist capability answers (local + private dataset)
             print(f"[ OK ] {spec.path}")
             summary.append((spec.path, "FINISHED", ""))
         except Exception as exc:  # noqa: BLE001 — record + continue, never abort the batch

@@ -38,8 +38,7 @@ conda activate aiera-benchmarking-tasks
 ```
 
 This installs `lm_eval==0.4.3` (pinned in `environment.yml`) along with the metric
-dependencies. The eval harness used to be vendored as a git submodule; it is now a
-pinned pip dependency, so no `git submodule init` step is required.
+dependencies.
 
 Now you can run individual tasks using the standard `lm_eval` command line:
 

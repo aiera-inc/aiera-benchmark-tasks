@@ -9,7 +9,7 @@ def process_results_gen(doc, results):
         completion = completion_splits[-1].strip()
 
     # hack fix for string formatting
-    if target[-2] == ".":
+    if len(target) >= 2 and target[-2] == ".":
         target = target + "0"
     
     elif "." not in target:

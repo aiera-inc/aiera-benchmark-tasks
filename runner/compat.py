@@ -67,9 +67,10 @@ def apply() -> None:
         model = kwargs.get("model", "")
         base = str(getattr(client, "base_url", "") or "")
         requested = kwargs.pop("max_tokens", None) or 0
-        if "openai.com" in base:
-            # OpenAI native: reasoning models need max_completion_tokens and reject
-            # temperature/stop; the `until` truncation is re-applied by lm-eval post-hoc.
+        if "openai.com" in base or "azure.com" in base:
+            # OpenAI native + Azure OpenAI: same semantics — reasoning models need
+            # max_completion_tokens and reject temperature/stop; `until` truncation is
+            # re-applied by lm-eval post-hoc.
             if _is_openai_reasoning(model):
                 kwargs["max_completion_tokens"] = max(requested, REASONING_BUDGET)
                 kwargs.pop("temperature", None)

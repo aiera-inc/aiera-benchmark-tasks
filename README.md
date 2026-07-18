@@ -1,5 +1,5 @@
 # aiera-benchmark-tasks
-This repository holds public-facing LLM benchmark tasks for use with EleutherAI's [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness). A leaderboard for these tasks is available on huggingface [here](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard).
+This repository holds public-facing LLM benchmark tasks for use with EleutherAI's [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness). A leaderboard for these tasks is available on huggingface [here](https://huggingface.co/spaces/Aiera/aiera-leaderboard).
 
 Tasks included:
 * **finqa**: Calculation-based Q&A over financial text. Dataset available on [huggingface](https://huggingface.co/datasets/Aiera/finqa-verified).
@@ -8,7 +8,7 @@ Tasks included:
 
 ## The Aiera Score
 
-The [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard) ranks models by a
+The [leaderboard](https://huggingface.co/spaces/Aiera/aiera-leaderboard) ranks models by a
 weighted **Aiera Score**. Its central measure is **Research** (answering proprietary,
 analyst-grade research questions while connected to Aiera's [MCP server](https://mcp-pub.aiera.com)),
 combined with the capability tasks in this repo:
@@ -79,7 +79,7 @@ lm_eval --model openai-chat-completions \
 ## Publishing models to the leaderboard
 
 The commands above run a single model and print results, but they don't get a model
-onto the [leaderboard](https://huggingface.co/spaces/Aiera/aiera-finance-leaderboard).
+onto the [leaderboard](https://huggingface.co/spaces/Aiera/aiera-leaderboard).
 The board only renders models that have a complete results file in the
 [`Aiera/aiera-leaderboard-results`](https://huggingface.co/datasets/Aiera/aiera-leaderboard-results)
 dataset (plus a matching entry in the queue dataset). The `runner/` package wraps that

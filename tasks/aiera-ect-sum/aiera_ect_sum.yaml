@@ -10,6 +10,21 @@ doc_to_text: |
   
   Provide a technical summary of the event transcript in a concise paragraph, highlighting significant announcements, financial results, and strategic plans discussed by key speakers. Focus on the major outcomes, operational achievements, and future guidance provided during the event. Include important metrics, major deals or partnerships, and any technological advancements or integrations mentioned. Also, note any specific challenges or issues addressed during the event. Conclude with the overall sentiment expressed by the leadership or key speakers regarding the organization's future direction and growth prospects.
 doc_to_target: summary
+# A summarization task must score the model's COMPLETE answer. lm-eval's default
+# generate_until stop is the few-shot delimiter "\n\n" — a vestige of base-model,
+# few-shot prompting that stops the model running into a fake next example. For the
+# zero-shot chat models we evaluate that never happens (they emit a natural end-of-turn),
+# and the "\n\n" stop instead truncates any multi-paragraph summary to its first line —
+# or, for reasoning models whose visible channel opens with a blank line, zeroes the
+# answer entirely. We drop it and keep only a benign EOS + triple-newline runaway guard
+# (matching finqa), with max_gen_toks as the real cap, so the full summary is scored.
+generation_kwargs:
+  max_gen_toks: 512
+  do_sample: False
+  temperature: 0.0
+  until:
+    - "</s>"
+    - "\n\n\n"
 process_results: !function utils.process_results_gen
 metric_list:
   - metric: bleu

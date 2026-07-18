@@ -64,6 +64,9 @@ _MISTRAL_BASE = "base_url=https://api.mistral.ai/v1"
 # OpenRouter: one OpenAI-compatible endpoint with broad serverless coverage of
 # open-weight models (routes to underlying hosts — footnote "via OpenRouter").
 _OPENROUTER_BASE = "base_url=https://openrouter.ai/api/v1"
+# Azure OpenAI deployments (gpt-5.6-*): the OpenAI-compatible /openai/v1 surface works with the
+# standard client (unlike the deployment-path API), so local-chat-completions can drive them.
+_AZURE_BASE = "base_url=https://dev-mj1qg7dd-eastus2.cognitiveservices.azure.com/openai/v1"
 
 
 def _openrouter(path: str, model_id: str, license: str) -> "ModelSpec":
@@ -76,6 +79,11 @@ def _together(path: str, model_id: str, license: str) -> "ModelSpec":
                      _TOGETHER_BASE, key_env="TOGETHER_API_KEY", license=license)
 
 
+def _azure(path: str, model_id: str, license: str = "proprietary") -> "ModelSpec":
+    return ModelSpec(path, "local-chat-completions", model_id, ("AZURE_OPENAI_API_KEY",),
+                     _AZURE_BASE, key_env="AZURE_OPENAI_API_KEY", license=license)
+
+
 REGISTRY: list[ModelSpec] = [
     # --- OpenAI -----------------------------------------------------------------
     # gpt-5.5-pro is a Responses-API reasoning model (rejects v1/chat/completions),
@@ -84,6 +92,11 @@ REGISTRY: list[ModelSpec] = [
     _openrouter("openai/gpt-5.5-pro", "openai/gpt-5.5-pro", "proprietary"),
     ModelSpec("openai/gpt-5.5", "openai-chat-completions", "gpt-5.5", ("OPENAI_API_KEY",)),
     ModelSpec("openai/gpt-5.2", "openai-chat-completions", "gpt-5.2", ("OPENAI_API_KEY",)),
+    # gpt-5.6 cohort — Azure deployments (capability via the /openai/v1 surface; research via
+    # the lift.py "azure" answerer). Reasoning models -> compat shim maps max_completion_tokens.
+    _azure("openai/gpt-5.6-sol", "gpt-5.6-sol"),
+    _azure("openai/gpt-5.6-luna", "gpt-5.6-luna"),
+    _azure("openai/gpt-5.6-terra", "gpt-5.6-terra"),
     ModelSpec("openai/o3-2025-04-16", "openai-chat-completions", "o3-2025-04-16", ("OPENAI_API_KEY",)),
     ModelSpec("openai/o4-mini-2025-04-16", "openai-chat-completions", "o4-mini-2025-04-16", ("OPENAI_API_KEY",)),
     ModelSpec("openai/gpt-4.1-nano-2025-04-14", "openai-chat-completions", "gpt-4.1-nano-2025-04-14", ("OPENAI_API_KEY",)),
@@ -109,6 +122,7 @@ REGISTRY: list[ModelSpec] = [
     _openrouter("openai/gpt-oss-120b", "openai/gpt-oss-120b", "Apache-2.0"),
     _openrouter("zai-org/GLM-5.2", "z-ai/glm-5.2", "MIT"),
     _openrouter("zai-org/GLM-4.6", "z-ai/glm-4.6", "MIT"),
+    _openrouter("moonshotai/Kimi-K3", "moonshotai/kimi-k3", "Modified-MIT"),
     _openrouter("moonshotai/Kimi-K2.7-Code", "moonshotai/kimi-k2.7-code", "Modified-MIT"),
     _openrouter("moonshotai/Kimi-K2.6", "moonshotai/kimi-k2.6", "Modified-MIT"),
     _openrouter("Qwen/Qwen3.7-Max", "qwen/qwen3.7-max", "proprietary"),

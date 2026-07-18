@@ -52,6 +52,10 @@ ANSWERS_REPO = "Aiera/aiera-leaderboard-eval-runs"  # private: full per-doc answ
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TASKS_PATH = REPO_ROOT / "tasks"
 
+# Snapshot the real OpenAI key before any per-model run remaps OPENAI_API_KEY for the
+# local-chat-completions backend, so native openai-chat-completions models can be restored to it.
+_REAL_OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")
@@ -103,6 +107,12 @@ def _run_one(spec: ModelSpec, tasks: list[str], limit: int | None) -> dict:
     compat.apply()
 
     # local-chat-completions reads its key from OPENAI_API_KEY; map the provider key in.
+    # A prior local-chat-completions model (e.g. Azure) leaves the mapped key in
+    # OPENAI_API_KEY, which then 401s a later native openai-chat-completions model
+    # (gpt-5.5/5.2) hitting api.openai.com. Restore the real OPENAI_API_KEY each call
+    # so every model starts from a clean env regardless of run order.
+    if _REAL_OPENAI_KEY is not None:
+        os.environ["OPENAI_API_KEY"] = _REAL_OPENAI_KEY
     env_key = spec.key_env or PROVIDER_KEY_FOR_OPENAI_COMPAT.get(spec.org)
     if spec.backend == "local-chat-completions" and env_key:
         os.environ["OPENAI_API_KEY"] = os.environ[env_key]
